@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,20 +27,38 @@ public class D3 {
 	static poly[] cube = {  new poly( 100, 100, 100, 100,-100, 100,-100, 100, 100, Color.RED),
 							new poly(-100,-100, 100, 100,-100, 100,-100, 100, 100, Color.RED),
 							
-							new poly( 100, 100,-100, 100,-100,-100,-100, 100,-100, Color.RED),
-							new poly(-100,-100,-100, 100,-100,-100,-100, 100,-100, Color.RED),
+							new poly( 100, 100,-100, 100,-100,-100,-100, 100,-100, Color.BLUE),
+							new poly(-100,-100,-100, 100,-100,-100,-100, 100,-100, Color.BLUE),
 							
-							new poly( 100, 100, 100, 100,-100, 100, 100, 100,-100, Color.RED),
-							new poly( 100,-100,-100, 100,-100, 100, 100, 100,-100, Color.RED),
+							new poly( 100, 100, 100, 100,-100, 100, 100, 100,-100, Color.GREEN),
+							new poly( 100,-100,-100, 100,-100, 100, 100, 100,-100, Color.GREEN),
 							
-							new poly(-100, 100, 100,-100,-100, 100,-100, 100,-100, Color.RED),
-							new poly(-100,-100,-100,-100,-100, 100,-100, 100,-100, Color.RED),
+							new poly(-100, 100, 100,-100,-100, 100,-100, 100,-100, Color.YELLOW),
+							new poly(-100,-100,-100,-100,-100, 100,-100, 100,-100, Color.YELLOW),
 							
-							new poly( 100, 100, 100,-100, 100, 100, 100, 100,-100, Color.RED),
-							new poly(-100, 100,-100,-100, 100, 100, 100, 100,-100, Color.RED),
+							new poly( 100, 100, 100,-100, 100, 100, 100, 100,-100, Color.MAGENTA),
+							new poly(-100, 100,-100,-100, 100, 100, 100, 100,-100, Color.MAGENTA),
 							
-							new poly( 100,-100, 100,-100,-100, 100, 100,-100,-100, Color.RED),
-							new poly(-100,-100,-100,-100,-100, 100, 100,-100,-100, Color.RED)};
+							new poly( 100,-100, 100,-100,-100, 100, 100,-100,-100, Color.GRAY),
+							new poly(-100,-100,-100,-100,-100, 100, 100,-100,-100, Color.GRAY)};
+	static poly[] offcube = {   new poly( 200, 200, 200, 200,00, 200,00, 200, 200, Color.RED),
+								new poly(00,00, 200, 200,00, 200,00, 200, 200, Color.RED),
+								
+								new poly( 200, 200,00, 200,00,00,00, 200,00, Color.RED),
+								new poly(00,00,00, 200,00,00,00, 200,00, Color.RED),
+								
+								new poly( 200, 200, 200, 200,00, 200, 200, 200,00, Color.RED),
+								new poly( 200,00,00, 200,00, 200, 200, 200,00, Color.RED),
+								
+								new poly(00, 200, 200,00,00, 200,00, 200,00, Color.RED),
+								new poly(00,00,00,00,00, 200,00, 200,00, Color.RED),
+								
+								new poly( 200, 200, 200,00, 200, 200, 200, 200,00, Color.RED),
+								new poly(00, 200,00,00, 200, 200, 200, 200,00, Color.RED),
+								
+								new poly( 200,00, 200,00,00, 200, 200,00,00, Color.RED),
+								new poly(00,00,00,00,00, 200, 200,00,00, Color.RED)};
+
 	static ActionListener action = new ActionListener(){
 
 		@Override
@@ -117,19 +136,23 @@ public class D3 {
 				g.fillRect(0, 0, 2000, 2000);
 				g.setColor(Color.WHITE);
 				int ce = 500;
-				for(poly p : cube) {
-					//g.setColor(p.col);
-					vert a = rot.transM(p.a);
-					vert b = rot.transM(p.b);
-					vert c = rot.transM(p.c);
-					g.setColor(Color.BLUE);
-					int[] x = {a.x + ce, b.x + ce, c.x + ce};
-					int[] y = {a.y + ce, b.y + ce, c.y + ce};
-					//g.fillPolygon(x, y, 3);
+				poly[] temp = poly.rotate(cube, rot);
+
+				Arrays.sort(temp, new SortByZ());
+				
+				for(poly p : temp) {
+					g.setColor(p.col);
+					//vert a = rot.transM(p.a);
+					//vert b = rot.transM(p.b);
+					//vert c = rot.transM(p.c);
+					//g.setColor(Color.BLUE);
+					int[] x = {p.a.x + ce, p.b.x + ce, p.c.x + ce};
+					int[] y = {p.a.y + ce, p.b.y + ce, p.c.y + ce};
+					g.fillPolygon(x, y, 3);
 					g.setColor(Color.WHITE);
-					g.drawLine(a.x + ce, a.y + ce, b.x + ce, b.y + ce);
-					g.drawLine(b.x + ce, b.y + ce, c.x + ce, c.y + ce);
-					g.drawLine(c.x + ce, c.y + ce, a.x + ce, a.y + ce);
+					g.drawLine(p.a.x + ce, p.a.y + ce, p.b.x + ce, p.b.y + ce);
+					g.drawLine(p.b.x + ce, p.b.y + ce, p.c.x + ce, p.c.y + ce);
+					g.drawLine(p.c.x + ce, p.c.y + ce, p.a.x + ce, p.a.y + ce);
 				}
 				g.setColor(Color.WHITE);
 				g.drawString("{" + XY + ", " + XZ + ", " + YZ + "}", 10, 30);
