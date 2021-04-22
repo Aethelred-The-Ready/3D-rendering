@@ -5,4 +5,8 @@ public class vert {
 		y = Y;
 		z = Z;
 	}
+	
+	public String toString() {
+		return "{" + x + "," + y + "," + z + "}";
+	}
 }

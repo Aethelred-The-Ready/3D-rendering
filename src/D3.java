@@ -4,7 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,52 +16,20 @@ import javax.swing.Timer;
 
 public class D3 {
 	
+	
 	static boolean rotatin = false;
 	static int XY = 0;
 	static int XZ = 0;
 	static int YZ = 0;
 	static double[][] rotd = {{1,0,0},{0,1,0},{0,0,1}};
+	static int ce = 500;
+	static zpix[][] zbuff = new zpix[1000][1000];
+	static byte curCols = 1;
+	static Color[] colors = new Color[127];
+	static vert point = new vert(0,0,0);
 	static matrix rot = new matrix(rotd);
 	static JPanel j;
-	static poly[] tetra = {	new poly(100, 100, 100, -100, -100, 100, -100, 100, -100, Color.RED),
-							new poly(100, 100, 100, -100, -100, 100, 100, -100, -100, Color.GREEN),
-							new poly(-100, 100, -100, 100, -100, -100, 100, 100, 100, Color.BLUE),
-							new poly(-100, 100, -100, 100, -100, -100, -100, -100, 100, Color.MAGENTA)};
-	
-	static poly[] cube = {  new poly( 100, 100, 100, 100,-100, 100,-100, 100, 100, Color.RED),
-							new poly(-100,-100, 100, 100,-100, 100,-100, 100, 100, Color.RED),
-							
-							new poly( 100, 100,-100, 100,-100,-100,-100, 100,-100, Color.BLUE),
-							new poly(-100,-100,-100, 100,-100,-100,-100, 100,-100, Color.BLUE),
-							
-							new poly( 100, 100, 100, 100,-100, 100, 100, 100,-100, Color.GREEN),
-							new poly( 100,-100,-100, 100,-100, 100, 100, 100,-100, Color.GREEN),
-							
-							new poly(-100, 100, 100,-100,-100, 100,-100, 100,-100, Color.YELLOW),
-							new poly(-100,-100,-100,-100,-100, 100,-100, 100,-100, Color.YELLOW),
-							
-							new poly( 100, 100, 100,-100, 100, 100, 100, 100,-100, Color.MAGENTA),
-							new poly(-100, 100,-100,-100, 100, 100, 100, 100,-100, Color.MAGENTA),
-							
-							new poly( 100,-100, 100,-100,-100, 100, 100,-100,-100, Color.GRAY),
-							new poly(-100,-100,-100,-100,-100, 100, 100,-100,-100, Color.GRAY)};
-	static poly[] offcube = {   new poly( 200, 200, 200, 200,00, 200,00, 200, 200, Color.RED),
-								new poly(00,00, 200, 200,00, 200,00, 200, 200, Color.RED),
-								
-								new poly( 200, 200,00, 200,00,00,00, 200,00, Color.RED),
-								new poly(00,00,00, 200,00,00,00, 200,00, Color.RED),
-								
-								new poly( 200, 200, 200, 200,00, 200, 200, 200,00, Color.RED),
-								new poly( 200,00,00, 200,00, 200, 200, 200,00, Color.RED),
-								
-								new poly(00, 200, 200,00,00, 200,00, 200,00, Color.RED),
-								new poly(00,00,00,00,00, 200,00, 200,00, Color.RED),
-								
-								new poly( 200, 200, 200,00, 200, 200, 200, 200,00, Color.RED),
-								new poly(00, 200,00,00, 200, 200, 200, 200,00, Color.RED),
-								
-								new poly( 200,00, 200,00,00, 200, 200,00,00, Color.RED),
-								new poly(00,00,00,00,00, 200, 200,00,00, Color.RED)};
+	static poly[] cur;
 
 	static ActionListener action = new ActionListener(){
 
@@ -98,24 +70,91 @@ public class D3 {
 			j.repaint();
 		}
 
-
 		public void keyReleased(KeyEvent e) {
 			
 		}
 
 		public void keyTyped(KeyEvent e) {
+		}
+	};
+	
+	static MouseListener m = new MouseListener() {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			j.repaint();
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
 			
-		}};
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			
+		}
+
+			
+	};
 	
 	public static void main(String[] args) {
+		load("cube.txt");
+		colors[0] = Color.BLACK;
+		for(int i = 0; i < cur.length;i++) {
+			int a = contains(colors, cur[i].col);
+			if(a == -1) {
+				colors[curCols] = cur[i].col;
+				a = curCols;
+				curCols++;
+			}
+			cur[i].colCode = (byte) a;
+		}
 		render();
 		t.start();
+	}
+	
+	private static int contains(Color[] arr, Color c) {
+		for(int i = 0; i < arr.length;i++) {
+			if(arr[i] == c) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	private static void load(String filename) {
+		System.out.println("LOADING FROM " + filename);
+		try {
+			File f = new File(filename);
+			Scanner fr = new Scanner(f);
+			int numF = fr.nextInt();
+			fr.nextLine();
+			poly[] p = new poly[numF];
+			for(int i = 0;i < numF;i++) {
+				p[i] = new poly(fr.nextLine());
+			}
+			cur = p;
+			fr.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void applyRot() {
 		double[][] xyd = {{Math.cos(Math.toRadians(XY)), -Math.sin(Math.toRadians(XY)), 0},
 						  {Math.sin(Math.toRadians(XY)), Math.cos(Math.toRadians(XY)) , 0},
-						  {0						   , 0						  , 1}};
+						  {0						   , 0						      , 1}};
 		rot.m = rot.multiplyM(xyd);
 		double[][] xzd = {{1, 0							   , 0},
 				          {0, Math.cos(Math.toRadians(XZ)) , Math.sin(Math.toRadians(XZ))},
@@ -131,28 +170,22 @@ public class D3 {
 		JFrame frame = new JFrame("3D projector");
 		
 		j = new JPanel(){
-			public void paint(Graphics g) {	
-				g.setColor(Color.BLACK);
-				g.fillRect(0, 0, 2000, 2000);
-				g.setColor(Color.WHITE);
-				int ce = 500;
-				poly[] temp = poly.rotate(cube, rot);
-
-				Arrays.sort(temp, new SortByZ());
+			public void paint(Graphics g) {
+				poly[] temp = poly.rotate(cur, rot);
 				
+				for(int i = 0; i < zbuff.length;i++) {
+					for(int k = 0; k < zbuff[i].length;k++) {
+						zbuff[i][k] = new zpix();
+					}
+				}
 				for(poly p : temp) {
-					g.setColor(p.col);
-					//vert a = rot.transM(p.a);
-					//vert b = rot.transM(p.b);
-					//vert c = rot.transM(p.c);
-					//g.setColor(Color.BLUE);
-					int[] x = {p.a.x + ce, p.b.x + ce, p.c.x + ce};
-					int[] y = {p.a.y + ce, p.b.y + ce, p.c.y + ce};
-					g.fillPolygon(x, y, 3);
-					g.setColor(Color.WHITE);
-					g.drawLine(p.a.x + ce, p.a.y + ce, p.b.x + ce, p.b.y + ce);
-					g.drawLine(p.b.x + ce, p.b.y + ce, p.c.x + ce, p.c.y + ce);
-					g.drawLine(p.c.x + ce, p.c.y + ce, p.a.x + ce, p.a.y + ce);
+					p.addToZBuffer(zbuff, ce);
+				}
+				for(int i = 0; i < zbuff.length;i++) {
+					for(int k = 0; k < zbuff[i].length;k++) {
+						g.setColor(colors[zbuff[i][k].c]);
+						g.fillRect(i, k, 1, 1);
+					}
 				}
 				g.setColor(Color.WHITE);
 				g.drawString("{" + XY + ", " + XZ + ", " + YZ + "}", 10, 30);
@@ -160,11 +193,11 @@ public class D3 {
 		};
 		
 		frame.addKeyListener(k);
+		frame.addMouseListener(m);
 		frame.add(j);
 		frame.setLocation(100,0);
 		frame.setSize(1000, 1000);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
 }
