@@ -47,17 +47,17 @@ public class D3 {
 
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_Q) {
-				XY--;
-			}else if(e.getKeyCode() == KeyEvent.VK_E) {
 				XY++;
+			}else if(e.getKeyCode() == KeyEvent.VK_E) {
+				XY--;
 			}else if(e.getKeyCode() == KeyEvent.VK_W) {
 				XZ--;
 			}else if(e.getKeyCode() == KeyEvent.VK_S) {
 				XZ++;
 			}else if(e.getKeyCode() == KeyEvent.VK_A) {
-				YZ--;
-			}else if(e.getKeyCode() == KeyEvent.VK_D) {
 				YZ++;
+			}else if(e.getKeyCode() == KeyEvent.VK_D) {
+				YZ--;
 			}else if(e.getKeyCode() == KeyEvent.VK_R) {
 				rotatin =! rotatin;
 			}else if(e.getKeyCode() == KeyEvent.VK_0) {
